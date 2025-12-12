@@ -1,6 +1,6 @@
 # Indoor-Environment-Monitor
 Real-time IoT environmental safety monitoring using ESP32 + Raspberry Pi, with live dashboard and hazard analysis.
-## Project Status: In Development
+## 🚧 Project Status: In Development
 This repository currently contains the initial project structure, planned features, and setup details.  
 Firmware, server code, dashboard, and documentation will be added progressively as the project is built.
 
