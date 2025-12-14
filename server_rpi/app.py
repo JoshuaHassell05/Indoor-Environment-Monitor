@@ -18,3 +18,10 @@ def sensor():
     if len(data_store) > 200:
         data_store.pop(0)
     return {'status': 'success'}, 200
+
+@app.route('/data', methods=['GET'])
+def api_readings():
+    return jsonify(data_store)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
