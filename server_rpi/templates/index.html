@@ -1,3 +1,9 @@
+<!--
+Dashboard UI for Indoor Environment Monitor
+
+Served by Flask application at GET and updated by static/main.js which polls
+GET /api/reading and populates the fields below.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +20,7 @@
             Live reading from an ESP32 & BME680 sensor node.
         </p>
 
+        <!-- System status risk and last update time-->
         <div class="status-row">
             <div>
                 <span class="label">Risk:</span>
@@ -25,6 +32,7 @@
             </div>
         </div>
 
+        <!-- Latest sensor values-->
         <div class="grid">
             <div class="card">
                 <div class="metric-title">Temperature</div>
