@@ -6,7 +6,7 @@ Responsabilities:
 - Stores recent sensor data with timestamps.
 - Serves as a web based dashboard for live monitoring.
 """
-from analytics import attatch_risk_fields
+from analytics import attach_risk_fields
 from flask import Flask, jsonify, request, render_template
 from datetime import datetime
 
@@ -39,7 +39,7 @@ def sensor():
 @app.route('/data', methods=['GET'])
 def api_readings():
     # Return the stored sensor readings as JSON
-    return jsonify(data_store)
+    return jsonify(READINGS)
 
 # -- Application Entry Point ---
 if __name__ == '__main__':
