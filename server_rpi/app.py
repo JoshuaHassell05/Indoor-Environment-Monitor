@@ -6,6 +6,7 @@ Responsabilities:
 - Stores recent sensor data with timestamps.
 - Serves as a web based dashboard for live monitoring.
 """
+from analytics import attatch_risk_fields
 from flask import Flask, jsonify, request, render_template
 from datetime import datetime
 
@@ -13,7 +14,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Memory data storage for recent sensor readings
-data_store = []
+READINGS = []
 
 # --- Web Routes ---
 @app.route('/')
@@ -29,9 +30,10 @@ def sensor():
     if not data:
         return {'status': 'error', 'message': 'No data provided'}, 400
     data['timestamp'] = datetime.utcnow().isoformat()
-    data_store.append(data)
-    if len(data_store) > 200:
-        data_store.pop(0)
+    data = attatch_risk_fields(data)
+    READINGS.append(data)
+    if len(READINGS) > 100:
+        READINGS.pop(0)
     return {'status': 'success'}, 200
 
 @app.route('/data', methods=['GET'])
