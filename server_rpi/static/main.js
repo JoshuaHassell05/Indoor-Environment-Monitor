@@ -1,3 +1,10 @@
+ /* 
+    Frontend logic for the Indoor Environment Monitor Dashboard 
+        - Polls GET /api/readings every 3 seconds
+        - Updates the dashboard with the latest readings
+        - Applies risk styling via CSS classes on the "pill" element
+ */
+// Helper to set text content of an element, with optional number formatting
  function setText(elementId, value, decimals = null){
     const el = document.getElementById(elementId);
     if (!el) return;
@@ -14,6 +21,7 @@
  function setRisk(riskText){
     const riskEL = document.getElementById("risk");
     if (!riskEL) return;
+    // Reset to base class to avoid stale styling when risk changes
     riskEL.className = "pill";
     riskEL.textContent = riskText ?? "--";
     if (riskText === "Safe"){
@@ -26,6 +34,7 @@
         riskEL.classList.add("warning");
     }
  }
+ // Main function to refresh dashboard data
  async function refreshDashboard(){
     try {
         const response = await fetch("/api/readings");
@@ -42,8 +51,10 @@
         setRisk(latest.risk);
     }
     catch (error){
+        // Log error but do not disrupt periodic refresh
         console.error("Dashboard refresh failed:", error);
     }
 }
+// Initial load and periodic refresh every 3 seconds
 refreshDashboard();
 setInterval(refreshDashboard, 3000);
