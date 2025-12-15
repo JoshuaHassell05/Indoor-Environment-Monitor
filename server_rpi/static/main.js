@@ -26,3 +26,22 @@
         riskEL.classList.add("warning");
     }
  }
+ async function refreshDashboard(){
+    try {
+        const response = await fetch("/api/readings");
+        const data = await response.json();
+        if (!reading.length){
+            return;
+        }
+        const latest = readings[readings.length - 1];
+        setText("temp", latest.temperature, 1);
+        setText("hum", latest.humidity, 1);
+        setText("press", latest.pressure, 1);
+        setText("gas", latest.gas, 0);
+        setText("time", latest.timestamp);
+        setRisk(latest.risk);
+    }
+    catch (error){
+        console.error("Dashboard refresh failed:", error);
+    }
+}
