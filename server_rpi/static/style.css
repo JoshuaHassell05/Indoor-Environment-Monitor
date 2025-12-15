@@ -49,3 +49,8 @@ h1{
     background: #ffd6d6;
     color: #8b0000;
 }
+.grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
