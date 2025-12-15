@@ -30,3 +30,10 @@ h1{
     font-weight: 700;
     margin-right: 6px;
 }
+.pill{
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #ddd;
+    font-weight: 700;
+}
