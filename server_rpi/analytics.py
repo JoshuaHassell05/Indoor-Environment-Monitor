@@ -1,4 +1,8 @@
+"""
+Risk evaluation logic for environmental sensor readings.
+"""
 def evaluate_risk(reading: dict) -> dict:
+    """Returns risk level and reasons based on sensor data."""
     temp_c = reading.get('temperature')
     humidity = reading.get('humidity')
     gas_ohms = reading.get('gas_resistance')
@@ -32,6 +36,7 @@ def evaluate_risk(reading: dict) -> dict:
     return {'risk': "ELEVATED", 'risk_reason': reasons}
 
 def attach_risk_fields(reading: dict) -> dict:
+    """Returns the reading with risk level and reasons attached."""
     risk_info = evaluate_risk(reading)
     reading['risk'] = risk_info['risk']
     reading['risk_reason'] = risk_info['risk_reason']
