@@ -69,3 +69,9 @@ h1{
     font-size: 34px;
     font-weight: 800;
 }
+.unit{
+    font-size: 16px;
+    font-weight: 700;
+    margin-left: 6px;
+    color: #444;
+}
