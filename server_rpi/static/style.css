@@ -37,3 +37,15 @@ h1{
     background: #ddd;
     font-weight: 700;
 }
+.pill.safe{
+    background: #d9f2de;
+    color: #1b5e20;
+}
+.pill.elevated{
+    background: #fff1cc;
+    color: #8a6d00;
+}
+.pill.warning{
+    background: #ffd6d6;
+    color: #8b0000;
+}
