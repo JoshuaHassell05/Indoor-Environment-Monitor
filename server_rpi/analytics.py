@@ -31,4 +31,9 @@ def evaluate_risk(reading: dict) -> dict:
         return {'risk': "WARNING", 'risk_reason': reasons}
     return {'risk': "ELEVATED", 'risk_reason': reasons}
 
+def attatch_risk_fields(reading: dict) -> dict:
+    risk_info = evaluate_risk(reading)
+    reading['risk'] = risk_info['risk']
+    reading['risk_reason'] = risk_info['risk_reason']
+    return reading
     
