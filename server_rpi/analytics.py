@@ -25,5 +25,10 @@ def evaluate_risk(reading: dict) -> dict:
         severe = True
     if gas_ohms <= 20000:
         severe = True
-    
+    if not reasons:
+        return {'risk': "SAFE", 'risk_reason': ["All sensor values within safe ranges"]}
+    if severe:
+        return {'risk': "WARNING", 'risk_reason': reasons}
+    return {'risk': "ELEVATED", 'risk_reason': reasons}
+
     
