@@ -45,3 +45,5 @@
         console.error("Dashboard refresh failed:", error);
     }
 }
+refreshDashboard();
+setInterval(refreshDashboard, 3000);
