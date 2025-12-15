@@ -25,3 +25,8 @@ h1{
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     margin-bottom: 18px;
 }
+.label{
+    color: #444;
+    font-weight: 700;
+    margin-right: 6px;
+}
