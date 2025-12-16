@@ -23,3 +23,30 @@ def init_db() -> None:
     )
     conn.commit()
 
+def insert_reading(reading: dict) -> None:
+    """Inserts a sensor reading into the database."""
+    reasons_json = json.dumps(reading.get('risk_reasons', []))
+    with get_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO readings(
+                timestamp,
+                temperature,
+                humidity,
+                pressure,
+                gas_resistance,
+                risk,
+                risk_reasons
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,           
+            (
+                reading['timestamp'],
+                reading.get('temperature'),
+                reading.get('humidity'),
+                reading.get('pressure'),
+                reading.get('gas_resistance'),
+                reading.get('risk'),
+                reasons_json
+            )
+        )
+        conn.commit()
