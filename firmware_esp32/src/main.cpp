@@ -20,4 +20,8 @@ void connectWiFi() {
   Serial.print("ESP32 IP address: ");
   Serial.println(WiFi.localIP());
 }
-
+bool initBME680() {
+  if (bme.begin(0x77)) return true;
+  if (bme.begin(0x76)) return true;
+  return false;
+}
