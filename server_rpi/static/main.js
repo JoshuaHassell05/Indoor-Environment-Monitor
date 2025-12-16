@@ -24,7 +24,7 @@
     // Reset to base class to avoid stale styling when risk changes
     riskEL.className = "pill";
     riskEL.textContent = riskText ?? "--";
-    if (riskText === "Safe"){
+    if (riskText === "SAFE"){
         riskEL.classList.add("safe");
     }
     else if (riskText === "ELEVATED"){
@@ -34,20 +34,33 @@
         riskEL.classList.add("warning");
     }
  }
+function formatTimestamp(isoString) {
+  if (!isoString) return "--";
+  const date = new Date(isoString + "Z");
+  return date.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
+
  // Main function to refresh dashboard data
  async function refreshDashboard(){
     try {
         const response = await fetch("/api/readings");
-        const data = await response.json();
-        if (!reading.length){
+        const readings = await response.json();
+        if (!readings.length){
             return;
         }
         const latest = readings[readings.length - 1];
         setText("temp", latest.temperature, 1);
         setText("hum", latest.humidity, 1);
         setText("press", latest.pressure, 1);
-        setText("gas", latest.gas, 0);
-        setText("time", latest.timestamp);
+        setText("gas", latest.gas_resistance, 0);
+        setText("time", formatTimestamp(latest.timestamp));
         setRisk(latest.risk);
     }
     catch (error){
