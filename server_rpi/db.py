@@ -55,40 +55,72 @@ def insert_reading(reading: dict) -> None:
         )
         conn.commit()
 
-def fetch_recent_readings(limit: int = 100) -> list[dict]:
-    """Fetches the most recent sensor readings from the database."""
-    limit = max(1, min(limit, 1000))  # Clamp limit between 1 and 1000
+def fetch_series(range_key: str = "day") -> list[dict]:
+    """Return a time series of aggregated sensor readings.
+    range_key controls:
+    - "day": last 24 hours, bucket by 5 minutes
+    - "week": last 7 days, bucket by 1 hour
+    - "month": last 30 days, bucket by 1 day
+    """
+    if range_key == "day":
+        since_modifier = "-1 day"
+        bucket_fmt = "%Y-%m-%d %H:%M"   
+        bucket_step = 5                
+    elif range_key == "week":
+        since_modifier = "-7 days"
+        bucket_fmt = "%Y-%m-%d %H:00"   
+        bucket_step = None
+    else:  # "month"
+        since_modifier = "-30 days"
+        bucket_fmt = "%Y-%m-%d"         
+        bucket_step = None
+
+    # We filter to a window (day/week/month), then group readings into time buckets.
     with get_connection() as conn:
-        rows = conn.execute(
-            """
-            SELECT 
-                timestamp,
-                temperature,
-                humidity,
-                pressure,
-                gas_resistance,
-                risk,
-                risk_reasons
-            FROM readings
-            ORDER BY id DESC
-            LIMIT ?
-            """,
-            (limit,)
-        ).fetchall()
-        rows = list(reversed(rows))
-        results = []
-        for row in rows:
-            try: 
-                reasons = json.loads(row['risk_reasons'] or '[]')
-            except json.JSONDecodeError:
-                reasons = []
-            results.append({
-                'timestamp': row['timestamp'],
-                'temperature': row['temperature'],
-                'humidity': row['humidity'],
-                'pressure': row['pressure'],
-                'gas_resistance': row['gas_resistance'],
-                'risk': row['risk'],
-                'risk_reasons': reasons
-            })
-        return results
+        if bucket_step is None:
+            rows = conn.execute(
+                f"""
+                SELECT
+                  strftime('{bucket_fmt}', timestamp) AS t,
+                  AVG(temperature) AS temp_avg,
+                  AVG(humidity) AS hum_avg,
+                  AVG(gas_resistance) AS gas_avg
+                FROM readings
+                WHERE datetime(timestamp) >= datetime('now', ?)
+                GROUP BY t
+                ORDER BY t ASC;
+                """,
+                (since_modifier,),
+            ).fetchall()
+        else:
+            # For 5-minute buckets, we group by "hour + floor(minute/5)*5".
+            rows = conn.execute(
+                """
+                SELECT
+                  -- Build a bucket label like "YYYY-MM-DD HH:MM" where MM is 00,05,10,...55
+                  strftime('%Y-%m-%d %H:', timestamp) ||
+                  printf('%02d', (CAST(strftime('%M', timestamp) AS INTEGER) / 5) * 5) AS t,
+                  AVG(temperature) AS temp_avg,
+                  AVG(humidity) AS hum_avg,
+                  AVG(gas_resistance) AS gas_avg
+                FROM readings
+                WHERE datetime(timestamp) >= datetime('now', ?)
+                GROUP BY t
+                ORDER BY t ASC;
+                """,
+                (since_modifier,),
+            ).fetchall()
+
+    # Convert sqlite rows to normal Python dicts 
+    series = []
+    for r in rows:
+        series.append(
+            {
+                "t": r["t"],
+                "temp_avg": r["temp_avg"],
+                "hum_avg": r["hum_avg"],
+                "gas_avg": r["gas_avg"],
+            }
+        )
+    return series
+    
