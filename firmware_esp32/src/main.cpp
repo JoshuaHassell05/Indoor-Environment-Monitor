@@ -7,6 +7,7 @@
 /*
     ESP32 Firmware to read BME680 sensor data and send it to a server via HTTP POST.
 */
+
 // Wi-Fi credentials: Place holder values here
 const char* WIFI_SSID = "your_ssid";
 const char* WIFI_PASSWORD = "your_password";
