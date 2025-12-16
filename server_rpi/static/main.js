@@ -4,6 +4,11 @@
         - Updates the dashboard with the latest readings
         - Applies risk styling via CSS classes on the "pill" element
  */
+
+// Helper to convert Celsius to Fahrenheit
+function celsiusToFahrenheit(celsius) {
+  return (celsius * 9 / 5) + 32;
+}
 // Helper to set text content of an element, with optional number formatting
  function setText(elementId, value, decimals = null){
     const el = document.getElementById(elementId);
@@ -18,6 +23,8 @@
     }
     el.textContent = String(value);
  }
+
+ // Helper to set risk text and apply corresponding CSS class
  function setRisk(riskText){
     const riskEL = document.getElementById("risk");
     if (!riskEL) return;
@@ -34,6 +41,7 @@
         riskEL.classList.add("warning");
     }
  }
+// Helper to format ISO timestamp strings into a more readable format 
 function formatTimestamp(isoString) {
   if (!isoString) return "--";
   const date = new Date(isoString + "Z");
@@ -56,7 +64,7 @@ function formatTimestamp(isoString) {
             return;
         }
         const latest = readings[readings.length - 1];
-        setText("temp", latest.temperature, 1);
+        setText("temp", celsiusToFahrenheit(latest.temperature), 1);
         setText("hum", latest.humidity, 1);
         setText("press", latest.pressure, 1);
         setText("gas", latest.gas_resistance, 0);
