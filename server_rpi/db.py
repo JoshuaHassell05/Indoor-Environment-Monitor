@@ -1,7 +1,11 @@
 import sqlite3
 import json
 from pathlib import Path
-"""Database module for storing and retrieving sensor readings using SQLite."""
+
+"""
+Database module for storing and retrieving sensor readings using SQLite.
+"""
+
 DB_PATH = Path(__file__).resolve().parent / "readings.db"
 def get_connection() -> sqlite3.Connection:
     """Returns a connection to the SQLite database."""
