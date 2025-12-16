@@ -9,9 +9,11 @@ Responsibilities:
 from analytics import attach_risk_fields
 from flask import Flask, jsonify, request, render_template
 from datetime import datetime
+from db import init_db, insert_reading, fetch_recent_readings
 
 # --- Flask Application Setup ---
 app = Flask(__name__)
+init_db()
 
 # Memory data storage for recent sensor readings
 READINGS = []
