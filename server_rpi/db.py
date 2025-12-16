@@ -50,3 +50,41 @@ def insert_reading(reading: dict) -> None:
             )
         )
         conn.commit()
+
+def fetch_recent_readings(limit: int = 100) -> list[dict]:
+    """Fetches the most recent sensor readings from the database."""
+    limit = max(1, min(limit, 1000))  # Clamp limit between 1 and 1000
+    with get_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT 
+                timestamp,
+                temperature,
+                humidity,
+                pressure,
+                gas_resistance,
+                risk,
+                risk_reasons
+            FROM readings
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (limit,)
+        ).fetchall()
+        rows = list(reversed(rows))
+        results = []
+        for row in rows:
+            try: 
+                reasons = json.loads(row['risk_reasons'] or '[]')
+            except json.JSONDecodeError:
+                reasons = []
+            results.append({
+                'timestamp': row['timestamp'],
+                'temperature': row['temperature'],
+                'humidity': row['humidity'],
+                'pressure': row['pressure'],
+                'gas_resistance': row['gas_resistance'],
+                'risk': row['risk'],
+                'risk_reasons': reasons
+            })
+        return results
