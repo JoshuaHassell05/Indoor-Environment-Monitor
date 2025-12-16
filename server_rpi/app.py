@@ -25,8 +25,7 @@ def index():
 # --- API Routes ---
 @app.route('/sensor', methods=['POST'])
 def sensor():
-    # Receive sensor reading from ESP32 and store it with a timestamp
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({'status': 'error', 'message': 'No data provided'}), 400
     data['timestamp'] = datetime.utcnow().isoformat()
