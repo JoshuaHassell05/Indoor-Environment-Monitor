@@ -32,15 +32,15 @@ def sensor():
         return jsonify({'status': 'error', 'message': 'No data provided'}), 400
     data['timestamp'] = datetime.utcnow().isoformat()
     data = attach_risk_fields(data)
-    READINGS.append(data)
-    if len(READINGS) > 100:
-        READINGS.pop(0)
+    insert_reading(data)
     return jsonify({'status': 'success'}), 200
 
 @app.route('/api/readings', methods=['GET'])
 def api_readings():
     # Return the stored sensor readings as JSON
-    return jsonify(READINGS)
+    limit = request.args.get('limit', 100)
+    readings = fetch_recent_readings(limit)
+    return jsonify(readings)
 
 # -- Application Entry Point ---
 if __name__ == '__main__':
