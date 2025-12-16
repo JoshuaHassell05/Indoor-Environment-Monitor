@@ -18,7 +18,7 @@ Adafruit_BME680 bme; // I2C instance
 // Establish Wi-Fi connection
 void connectWiFi() {
   WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -92,9 +92,10 @@ void loop(){
     http.addHeader("Content-Type", "application/json");
     int httpResponseCode = http.POST(json);
     Serial.print("HTTP Response code: ");
-    Serial.printIn(httpCode)
-    Serial.printIn(http.getString());
+    Serial.println(httpResponseCode);
+    Serial.println(http.getString());
     http.end();
     // Transmission interval
     delay(3000);
 }
+
