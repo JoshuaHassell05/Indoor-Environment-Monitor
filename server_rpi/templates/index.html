@@ -34,7 +34,18 @@ GET /api/readings and populates the fields below.
 
         <!-- Latest sensor values-->
         <div class="grid">
-            
+
+            <div class="status-row" style="margin-top:14px;">
+                <div>
+                    <span class="label">Chart Range:</span>
+                    <select id="rangeSelect">
+                    <option value="day">Day</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="metric-title">History (last ~6 minutes)</div>
                 <canvas id="historyChart"></canvas>
