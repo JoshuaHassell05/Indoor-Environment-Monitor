@@ -2,7 +2,7 @@
 Dashboard UI for Indoor Environment Monitor
 
 Served by Flask application at GET and updated by static/main.js which polls
-GET /api/reading and populates the fields below.
+GET /api/readings and populates the fields below.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -53,7 +53,7 @@ GET /api/reading and populates the fields below.
             <div class="card">
                 <div class="metric-title">Pressure</div>
                 <div class="metric-value">
-                    <span id="pres">--</span>
+                    <span id="press">--</span>
                     <span class="unit">hPa</span>
                 </div>
             </div>
@@ -73,6 +73,6 @@ GET /api/reading and populates the fields below.
         </p>
     </div>
 
-    <script src="/static/dashboard.js"></script>
+    <script src="/static/main.js"></script>
 </body>
 </html>
