@@ -41,6 +41,7 @@ function celsiusToFahrenheit(celsius) {
         riskEL.classList.add("warning");
     }
  }
+
 // Helper to format ISO timestamp strings into a more readable format 
 function formatTimestamp(isoString) {
   if (!isoString) return "--";
@@ -54,28 +55,81 @@ function formatTimestamp(isoString) {
   });
 }
 
+// Helper to fetch time series data for charts
+async function fetchSeries(range) {
+  const res = await fetch(`/api/series?range=${encodeURIComponent(range)}`);
+  return await res.json();
+}
+
+// Chart.js setup for historical data chart
+let historyChart = null;
+function createHistoryChart() {
+  const canvas = document.getElementById("historyChart");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
+  historyChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [
+        { label: "Temperature (°F)", data: [], tension: 0.25 },
+        { label: "Humidity (%)", data: [], tension: 0.25 },
+        { label: "Gas Resistance (Ω)", data: [], tension: 0.25 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false
+    }
+  });
+}
+
+// Chart.js chart instance
+async function refreshChartRange() {
+    const range = document.getElementById("rangeSelect")?.value ?? "day";
+    const series = await fetchSeries(range);
+    const labels = series.map(p => p.t);
+    const tempsF = series.map(p => celsiusToFahrenheit(p.temp_avg));
+    const hums = series.map(p => p.hum_avg);
+    const gas = series.map(p => p.gas_avg);
+
+    if (!historyChart) createHistoryChart();
+    if (!historyChart) return;
+    historyChart.data.labels = labels;
+    historyChart.data.datasets[0].data = tempsF;
+    historyChart.data.datasets[1].data = hums;
+    historyChart.data.datasets[2].data = gas;
+    historyChart.update();
+}
 
  // Main function to refresh dashboard data
- async function refreshDashboard(){
-    try {
-        const response = await fetch("/api/readings");
-        const readings = await response.json();
-        if (!readings.length){
-            return;
-        }
-        const latest = readings[readings.length - 1];
-        setText("temp", celsiusToFahrenheit(latest.temperature), 1);
-        setText("hum", latest.humidity, 1);
-        setText("press", latest.pressure, 1);
-        setText("gas", latest.gas_resistance, 0);
-        setText("time", formatTimestamp(latest.timestamp));
-        setRisk(latest.risk);
+async function refreshDashboard() {
+  try {
+    const response = await fetch("/api/readings?limit=1");
+    const readings = await response.json();
+    if (!readings.length) return;
+    const latest = readings[0];
+    setText("temp", celsiusToFahrenheit(latest.temperature), 1);
+    setText("hum", latest.humidity, 1);
+    setText("press", latest.pressure, 1);
+    setText("gas", latest.gas_resistance, 0);
+    setText("time", formatTimestamp(latest.timestamp));
+    setRisk(latest.risk);
     }
     catch (error){
         // Log error but do not disrupt periodic refresh
         console.error("Dashboard refresh failed:", error);
     }
 }
+
+// Event listener for range selection change
+document.getElementById("rangeSelect")?.addEventListener("change", () => {
+  refreshChartRange();
+});
 // Initial load and periodic refresh every 3 seconds
 refreshDashboard();
+refreshChartRange();
 setInterval(refreshDashboard, 3000);
