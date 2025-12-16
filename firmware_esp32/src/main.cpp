@@ -41,3 +41,36 @@ void setup(){
     bme.setGasHeater(320, 150);
     Serial.println("BME680 initialized");
 }
+void loop(){
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("Wi-Fi disconnected, reconnecting...");
+        connectWiFi();
+    }
+    if (!bme.performReading()) {
+        Serial.println("Sensor reading failed");
+        delay(3000);
+        return;
+    }
+    float temperature = bme.temperature;
+    float humidity = bme.humidity;
+    float pressure = bme.pressure / 100.0;
+    float gasResistance = bme.gas_resistance;
+    String json =
+        "{"
+        "\"temperature\":" + String(temperature, 2) + ","
+        "\"humidity\":" + String(humidity, 2) + ","
+        "\"pressure\":" + String(pressure, 2) + ","
+        "\"gas_resistance\":" + String(gasResistance, 2) +
+        "}";
+    Serial.println("Sending data: ");
+    Serial.println(json);
+    HTTPClient http;
+    http.begin(SENSOR_POST_URL);
+    http.addHeader("Content-Type", "application/json");
+    int httpResponseCode = http.POST(json);
+    Serial.print("HTTP Response code: ");
+    Serial.printIn(httpCode)
+    Serial.printIn(http.getString());
+    http.end();
+    delay(3000);
+}
