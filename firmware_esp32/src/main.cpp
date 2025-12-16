@@ -25,3 +25,19 @@ bool initBME680() {
   if (bme.begin(0x76)) return true;
   return false;
 }
+void setup(){
+    Serial.begin(115200);
+    delay(500);
+    Wire.begin();
+    connectWiFi();
+    if (!initBME680()) {
+        Serial.println("BME680 not detected, Check wiring.");
+        while(true) delay(1000);
+    }
+    bme.setTemperatureOversampling(BME680_OS_8X);
+    bme.setHumidityOversampling(BME680_OS_2X);
+    bme.setPressureOversampling(BME680_OS_4X);
+    bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
+    bme.setGasHeater(320, 150);
+    Serial.println("BME680 initialized");
+}
