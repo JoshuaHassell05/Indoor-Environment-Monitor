@@ -9,7 +9,7 @@ Responsibilities:
 from analytics import attach_risk_fields
 from flask import Flask, jsonify, request, render_template
 from datetime import datetime
-from db import init_db, insert_reading, fetch_recent_readings
+from db import init_db, insert_reading, fetch_series
 
 # --- Flask Application Setup ---
 app = Flask(__name__)
@@ -38,9 +38,10 @@ def sensor():
 @app.route('/api/readings', methods=['GET'])
 def api_readings():
     # Return the stored sensor readings as JSON
-    limit = request.args.get('limit', 100)
-    readings = fetch_recent_readings(limit)
-    return jsonify(readings)
+    range_key = request.args.get("range", "day").lower()
+    if range_key not in ("day", "week", "month"):
+        range_key = "day"
+    return jsonify(fetch_series(range_key))
 
 # -- Application Entry Point ---
 if __name__ == '__main__':
