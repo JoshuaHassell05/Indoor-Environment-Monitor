@@ -8,7 +8,7 @@ Responsibilities:
 """
 from analytics import attach_risk_fields
 from flask import Flask, jsonify, request, render_template
-from datetime import datetime
+from datetime import datetime, timezone
 from db import init_db, insert_reading, fetch_series
 
 # --- Flask Application Setup ---
@@ -27,7 +27,7 @@ def sensor():
     data = request.get_json(silent=True)
     if not data:
         return jsonify({'status': 'error', 'message': 'No data provided'}), 400
-    data['timestamp'] = datetime.utcnow().isoformat()
+    data['timestamp'] = datetime.now(timezone.utc).isoformat()
     data = attach_risk_fields(data)
     insert_reading(data)
     return jsonify({'status': 'success'}), 200
