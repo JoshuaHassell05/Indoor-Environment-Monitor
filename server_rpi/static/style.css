@@ -94,7 +94,9 @@ h1{
     grid-column: 1 / -1;
     margin-bottom: 0; 
 }
-
+.card.chart-card{
+    grid-column: 1 / -1;
+}
 /* Mobile: stack everything */
 @media (max-width: 900px){
     .grid{
