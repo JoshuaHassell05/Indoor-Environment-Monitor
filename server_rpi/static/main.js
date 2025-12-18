@@ -136,12 +136,6 @@ async function refreshDashboard() {
     setText("press", latest.pressure, 1);
     setText("time", formatTimestamp(latest.timestamp));
     setRisk(latest.risk);
-
-    // Update the three gauges (added)
-    document.getElementById("tempGauge")?.setAttribute("value", celsiusToFahrenheit(latest.temperature).toFixed(1));
-    document.getElementById("humGauge")?.setAttribute("value", Number(latest.humidity).toFixed(1));
-    document.getElementById("gasGauge")?.setAttribute("value", Math.round(latest.gas_resistance));
-
     }
     catch (error){
         // Log error but do not disrupt periodic refresh
@@ -153,7 +147,6 @@ async function refreshDashboard() {
 document.getElementById("rangeSelect")?.addEventListener("change", () => {
   refreshChartRange();
 });
-
 // Initial load and periodic refresh every 3 seconds
 refreshDashboard();
 refreshChartRange();
