@@ -90,6 +90,10 @@ h1{
     color: #666;
     font-size: 12px;
 }
+.grid .status-row{
+    grid-column: 1 / -1;
+    margin-bottom: 0; 
+}
 
 /* Mobile: stack everything */
 @media (max-width: 900px){
