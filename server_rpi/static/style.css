@@ -97,6 +97,15 @@ h1{
 .card.chart-card{
     grid-column: 1 / -1;
 }
+.chart-wrap{
+    height: 220px;
+    width: 100%;
+    margin-top: 12px;
+}
+.chart-wrap canvas{
+    width: 100% !important;
+    height: 100% !important;
+}
 /* Mobile: stack everything */
 @media (max-width: 900px){
     .grid{
