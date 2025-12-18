@@ -55,6 +55,14 @@ function formatTimestamp(isoString) {
   });
 }
 
+// Helper to format bucket labels for time series charts
+function formatBucketLabel(t) {
+  if (!t) return "--";
+  // Convert "YYYY-MM-DD HH:MM" into an ISO UTC string "YYYY-MM-DDTHH:MMZ"
+  const isoUtc = t.replace(" ", "T") + "Z";
+  return new Date(isoUtc).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
 // Helper to fetch time series data for charts
 async function fetchSeries(range) {
   const res = await fetch(`/api/readings?range=${encodeURIComponent(range)}`);
