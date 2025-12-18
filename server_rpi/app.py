@@ -9,7 +9,7 @@ Responsibilities:
 from analytics import attach_risk_fields
 from flask import Flask, jsonify, request, render_template
 from datetime import datetime, timezone
-from db import init_db, insert_reading, fetch_series
+from db import init_db, insert_reading, fetch_series, fetch_latest
 
 # --- Flask Application Setup ---
 app = Flask(__name__)
@@ -31,6 +31,13 @@ def sensor():
     data = attach_risk_fields(data)
     insert_reading(data)
     return jsonify({'status': 'success'}), 200
+
+@app.route('/api/latest', methods=['GET'])
+def api_latest():
+    latest = fetch_latest()
+    if not latest:
+        return jsonify({}), 200
+    return jsonify(latest), 200
 
 @app.route('/api/readings', methods=['GET'])
 def api_readings():
