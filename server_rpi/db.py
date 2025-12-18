@@ -15,17 +15,23 @@ def get_connection() -> sqlite3.Connection:
 
 def init_db() -> None:
     """Create the readings table if it does not exist."""
-    conn = get_connection()
-    conn.execute(
-        """
-        CREATE TABLE IF NOT EXISTS readings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp TEXT NOT NULL,
-            data TEXT NOT NULL
+    with get_connection() as conn:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS readings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                temperature REAL,
+                humidity REAL,
+                pressure REAL,
+                gas_resistance REAL,
+                risk TEXT,
+                risk_reasons TEXT
+            )
+            """
         )
-        """
-    )
-    conn.commit()
+        conn.commit()
+
 
 def insert_reading(reading: dict) -> None:
     """Inserts a sensor reading into the database."""

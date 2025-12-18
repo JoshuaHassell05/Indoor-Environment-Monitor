@@ -57,9 +57,10 @@ function formatTimestamp(isoString) {
 
 // Helper to fetch time series data for charts
 async function fetchSeries(range) {
-  const res = await fetch(`/api/series?range=${encodeURIComponent(range)}`);
+  const res = await fetch(`/api/readings?range=${encodeURIComponent(range)}`);
   return await res.json();
 }
+
 
 // Chart.js setup for historical data chart
 let historyChart = null;
@@ -91,11 +92,10 @@ function createHistoryChart() {
 async function refreshChartRange() {
     const range = document.getElementById("rangeSelect")?.value ?? "day";
     const series = await fetchSeries(range);
-    const labels = series.map(p => p.t);
-    const tempsF = series.map(p => celsiusToFahrenheit(p.temp_avg));
-    const hums = series.map(p => p.hum_avg);
-    const gas = series.map(p => p.gas_avg);
-
+    const labels = series.map(p => formatTimestamp(p.timestamp));
+    const tempsF = series.map(p => celsiusToFahrenheit(p.temperature));
+    const hums = series.map(p => p.humidity);
+    const gas = series.map(p => p.gas_resistance);
     if (!historyChart) createHistoryChart();
     if (!historyChart) return;
     historyChart.data.labels = labels;
@@ -108,10 +108,10 @@ async function refreshChartRange() {
  // Main function to refresh dashboard data
 async function refreshDashboard() {
   try {
-    const response = await fetch("/api/readings?limit=1");
+    const response = await fetch("/api/readings");
     const readings = await response.json();
     if (!readings.length) return;
-    const latest = readings[0];
+    const latest = readings[readings.length - 1];
     setText("temp", celsiusToFahrenheit(latest.temperature), 1);
     setText("hum", latest.humidity, 1);
     setText("press", latest.pressure, 1);

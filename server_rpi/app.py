@@ -15,9 +15,6 @@ from db import init_db, insert_reading, fetch_series
 app = Flask(__name__)
 init_db()
 
-# Memory data storage for recent sensor readings
-READINGS = []
-
 # --- Web Routes ---
 @app.route('/')
 def index():
