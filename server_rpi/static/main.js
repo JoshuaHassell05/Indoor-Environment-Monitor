@@ -65,7 +65,8 @@ let tempChart = null;
 let humChart = null;
 let gasChart = null;
 
-function createLineChart(canvasId, label, color) {
+// Create a line chart using Chart.js
+function createLineChart(canvasId, label, color) { 
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
 
@@ -90,22 +91,33 @@ function createLineChart(canvasId, label, color) {
   });
 }
 
-// Chart.js chart instance
-async function refreshChartRange() {
+// Refresh charts based on selected range
+async function refreshChartRange() { 
     const range = document.getElementById("rangeSelect")?.value ?? "day";
     const series = await fetchSeries(range);
-    const labels = series.map(p => formatTimestamp(p.timestamp));
-    const tempsF = series.map(p => celsiusToFahrenheit(p.temperature));
-    const hums = series.map(p => p.humidity);
-    const gas = series.map(p => p.gas_resistance);
-    if (!historyChart) createHistoryChart();
-    if (!historyChart) return;
-    historyChart.data.labels = labels;
-    historyChart.data.datasets[0].data = tempsF;
-    historyChart.data.datasets[1].data = hums;
-    historyChart.data.datasets[2].data = gas;
-    historyChart.update();
-}
+    const labels = series.map(p => formatBucketLabel(p.t));
+    const tempsF = series.map(p => celsiusToFahrenheit(p.temp_avg));
+    const hums = series.map(p => p.hum_avg);
+    const gas = series.map(p => p.gas_avg);
+    if (!tempChart) tempChart = createLineChart("tempChart", "Temperature (°F)", "rgb(255, 99, 132)");
+    if (!humChart)  humChart  = createLineChart("humChart",  "Humidity (%)",     "rgb(54, 162, 235)");
+    if (!gasChart)  gasChart  = createLineChart("gasChart",  "Gas Resistance (Ω)","rgb(75, 192, 192)");
+    if (tempChart){
+      tempChart.data.labels = labels;
+      tempChart.data.datasets[0].data = tempsF;
+      tempChart.update();
+    }
+    if (humChart){
+      humChart.data.labels = labels;
+      humChart.data.datasets[0].data = hums;
+      humChart.update();
+    }
+    if (gasChart){
+      gasChart.data.labels = labels;
+      gasChart.data.datasets[0].data = gas;
+      gasChart.update();
+    }
+  }
 
  // Main function to refresh dashboard data
 async function refreshDashboard() {
