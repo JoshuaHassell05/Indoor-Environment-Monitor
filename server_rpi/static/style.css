@@ -89,3 +89,13 @@ h1{
     color: #666;
     font-size: 12px;
 }
+
+/* Mobile: stack everything */
+@media (max-width: 900px){
+    .grid{
+        grid-template-columns: 1fr;
+    }
+    .chart-wrap{
+        height: 260px;
+    }
+}
