@@ -61,24 +61,26 @@ async function fetchSeries(range) {
   return await res.json();
 }
 
+let tempChart = null;
+let humChart = null;
+let gasChart = null;
 
-// Chart.js setup for historical data chart
-let historyChart = null;
-function createHistoryChart() {
-  const canvas = document.getElementById("historyChart");
-  if (!canvas) return;
+function createLineChart(canvasId, label, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
 
   const ctx = canvas.getContext("2d");
-
-  historyChart = new Chart(ctx, {
+  return new Chart(ctx, {
     type: "line",
     data: {
       labels: [],
-      datasets: [
-        { label: "Temperature (°F)", data: [], tension: 0.25 },
-        { label: "Humidity (%)", data: [], tension: 0.25 },
-        { label: "Gas Resistance (Ω)", data: [], tension: 0.25 }
-      ]
+      datasets: [{
+        label: label,
+        data: [],
+        tension: 0.25,
+        borderColor: color,
+        backgroundColor: color
+      }]
     },
     options: {
       responsive: true,
