@@ -130,16 +130,18 @@ async function refreshChartRange() {
  // Main function to refresh dashboard data
 async function refreshDashboard() {
   try {
-    const response = await fetch("/api/readings");
-    const readings = await response.json();
-    if (!readings.length) return;
-    const latest = readings[readings.length - 1];
-    setText("temp", celsiusToFahrenheit(latest.temperature), 1);
-    setText("hum", latest.humidity, 1);
+    const response = await fetch("/api/latest");
+    const latest = await response.json();
+    if (!latest || !latest.timestamp) return;
     setText("press", latest.pressure, 1);
-    setText("gas", latest.gas_resistance, 0);
     setText("time", formatTimestamp(latest.timestamp));
     setRisk(latest.risk);
+
+    // Update the three gauges (added)
+    document.getElementById("tempGauge")?.setAttribute("value", celsiusToFahrenheit(latest.temperature).toFixed(1));
+    document.getElementById("humGauge")?.setAttribute("value", Number(latest.humidity).toFixed(1));
+    document.getElementById("gasGauge")?.setAttribute("value", Math.round(latest.gas_resistance));
+
     }
     catch (error){
         // Log error but do not disrupt periodic refresh
@@ -151,7 +153,9 @@ async function refreshDashboard() {
 document.getElementById("rangeSelect")?.addEventListener("change", () => {
   refreshChartRange();
 });
+
 // Initial load and periodic refresh every 3 seconds
 refreshDashboard();
 refreshChartRange();
 setInterval(refreshDashboard, 3000);
+setInterval(refreshChartRange, 9000);
