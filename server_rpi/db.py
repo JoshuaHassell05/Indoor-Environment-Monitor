@@ -60,6 +60,43 @@ def insert_reading(reading: dict) -> None:
             )
         )
         conn.commit()
+        
+def fetch_latest() -> dict | None:
+    """Return the most recent reading (raw)."""
+    with get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT
+                timestamp,
+                temperature,
+                humidity,
+                pressure,
+                gas_resistance,
+                risk,
+                risk_reasons
+            FROM readings
+            ORDER BY datetime(timestamp) DESC
+            LIMIT 1;
+            """
+        ).fetchone()
+
+    if not row:
+        return None
+
+    try:
+        reasons = json.loads(row["risk_reasons"] or "[]")
+    except Exception:
+        reasons = []
+
+    return {
+        "timestamp": row["timestamp"],
+        "temperature": row["temperature"],
+        "humidity": row["humidity"],
+        "pressure": row["pressure"],
+        "gas_resistance": row["gas_resistance"],
+        "risk": row["risk"],
+        "risk_reasons": reasons,
+    }
 
 def fetch_series(range_key: str = "day") -> list[dict]:
     """Return a time series of aggregated sensor readings.
