@@ -2,7 +2,6 @@
 Risk evaluation logic for environmental sensor readings.
 """
 def evaluate_risk(reading: dict) -> dict:
-    """Returns risk level and reasons based on sensor data."""
     temp_c = reading.get('temperature')
     humidity = reading.get('humidity')
     gas_ohms = reading.get('gas_resistance')
@@ -13,21 +12,23 @@ def evaluate_risk(reading: dict) -> dict:
         }
     reasons = []
     if humidity >= 70:
-        reasons.append("High Humidity (>= 70%)")
+        reasons.append("High Humidity")
     elif humidity <= 25:
-        reasons.append("Very Low Humidity (<= 25%)")
-    if temp_c >= 28:
-        reasons.append("High Temperature (>= 28°C)")
-    elif temp_c <= 16:
-        reasons.append("Low Temperature (<= 16°C)")
+        reasons.append("Very Low Humidity")
+    if temp_c >= 30.0:
+        reasons.append("High Temperature")         
+    elif temp_c >= 25.6:
+        reasons.append("Warm Temperature")         
+    elif temp_c <= 15.6:
+        reasons.append("Low Temperature")           
     if gas_ohms <= 20000:
-        reasons.append("Poor Air Quality (Gas Resistance <= 20kΩ)")
+        reasons.append("Poor Air Quality")
     elif gas_ohms <= 30000:
-        reasons.append("Moderate Air Quality (Gas Resistance <= 30kΩ)")
+        reasons.append("Moderate Air Quality")
 
     severe = (
         humidity >= 80 or humidity <= 20 or
-        temp_c >= 30 or temp_c <= 14 or
+        temp_c >= 30.0 or temp_c <= 15.6 or
         gas_ohms <= 20000
     )
 
@@ -44,9 +45,7 @@ def evaluate_risk(reading: dict) -> dict:
 
 
 def attach_risk_fields(reading: dict) -> dict:
-    """Returns the reading with risk level and reasons attached."""
     risk_info = evaluate_risk(reading)
     reading['risk'] = risk_info['risk']
     reading['risk_reasons'] = risk_info['risk_reasons']
-
     return reading
