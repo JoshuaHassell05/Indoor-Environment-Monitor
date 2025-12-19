@@ -45,7 +45,8 @@ function celsiusToFahrenheit(celsius) {
 // Helper to format ISO timestamp strings into a more readable format 
 function formatTimestamp(isoString) {
   if (!isoString) return "--";
-  const date = new Date(isoString + "Z");
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return "--";
   return date.toLocaleString(undefined, {
     month: "short",
     day: "numeric",
