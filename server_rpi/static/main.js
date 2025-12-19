@@ -198,18 +198,25 @@ async function refreshChartRange() {
  // Main function to refresh dashboard data
 async function refreshDashboard() {
   try {
-    const response = await fetch("/api/latest");
-    const latest = await response.json();
-    if (!latest || !latest.timestamp) return;
+    const res = await fetch("/api/latest");
+    const latest = await res.json();
+    if (!latest?.timestamp) return;
+
+    tempGauge?.setValue(
+      celsiusToFahrenheit(latest.temperature)
+    );
+
+    humGauge?.setValue(latest.humidity);
+    gasGauge?.setValue(latest.gas_resistance);
+
     setText("press", latest.pressure, 1);
     setText("time", formatTimestamp(latest.timestamp));
-    setRisk(latest.risk);
-    }
-    catch (error){
-        // Log error but do not disrupt periodic refresh
-        console.error("Dashboard refresh failed:", error);
-    }
+    setRisk(latest.risk, latest.risk_reasons);
+  } catch (error) {
+    console.error("Dashboard refresh failed:", error);
+  }
 }
+
 
 // Event listener for range selection change
 document.getElementById("rangeSelect")?.addEventListener("change", () => {
