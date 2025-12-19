@@ -222,8 +222,41 @@ async function refreshDashboard() {
 document.getElementById("rangeSelect")?.addEventListener("change", () => {
   refreshChartRange();
 });
-// Initial load and periodic refresh every 3 seconds
-refreshDashboard();
-refreshChartRange();
-setInterval(refreshDashboard, 3000);
-setInterval(refreshChartRange, 9000);
+
+// Initialize gauges and start periodic refresh on DOM load
+document.addEventListener("DOMContentLoaded", () => {
+  tempGauge = createGauge({
+    elId: "tempGauge",
+    min: 40,
+    max: 100,
+    seed: 40,
+    unitFormatter: v => `${Math.round(v)}°F`,
+    colorFn: tempColorForF
+  });
+
+  humGauge = createGauge({
+    elId: "humGauge",
+    min: 0,
+    max: 100,
+    seed: 0,
+    unitFormatter: v => `${Math.round(v)}%`,
+    colorFn: humColor
+  });
+
+  const GAS_FULL_SCALE = 100000; 
+
+  gasGauge = createGauge({
+    elId: "gasGauge",
+    min: 0,
+    max: 100,                 
+    seed: 0,
+    unitFormatter: v => `${Math.round(v)}Ω`, 
+    colorFn: gasColor,                    
+    toSeries: (ohms) => (ohms / GAS_FULL_SCALE) * 100  
+  });
+
+  refreshDashboard();
+  refreshChartRange();
+  setInterval(refreshDashboard, 3000);
+  setInterval(refreshChartRange, 9000);
+});
