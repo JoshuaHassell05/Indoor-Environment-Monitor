@@ -107,8 +107,7 @@ def fetch_series(range_key: str = "day") -> list[dict]:
     """
     if range_key == "day":
         since_modifier = "-1 day"
-        bucket_fmt = "%Y-%m-%d %H:%M"   
-        bucket_step = 5                
+        bucket_step = True               
     elif range_key == "week":
         since_modifier = "-7 days"
         bucket_fmt = "%Y-%m-%d %H:00"   
@@ -166,4 +165,3 @@ def fetch_series(range_key: str = "day") -> list[dict]:
             }
         )
     return series
-    
