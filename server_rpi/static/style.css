@@ -111,8 +111,6 @@ h1{
     pointer-events: none; 
     user-select: none; 
 } 
-
-/* Mobile: stack everything */
 @media (max-width: 900px){
     .grid{
         grid-template-columns: 1fr;
@@ -124,7 +122,6 @@ h1{
 .pill[data-tooltip]{
   position: relative;
 }
-
 .pill[data-tooltip]::after{
   content: attr(data-tooltip);
   position: absolute;
