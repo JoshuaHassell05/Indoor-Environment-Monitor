@@ -100,6 +100,73 @@ function createLineChart(canvasId, label, color) {
   });
 }
 
+let tempGauge = null;  
+let humGauge  = null;
+let gasGauge  = null;
+
+
+// Create a gauge chart using ApexCharts
+function createGauge({
+  elId,
+  min,
+  max,
+  seed,
+  unitFormatter,
+  colorFn,
+  toSeries = (raw) => raw,
+}) { // toSeries converts raw value to 0..100 scale for gauge 
+  const el = document.getElementById(elId);
+  if (!el || typeof ApexCharts === "undefined") return null;
+
+  let hasValue = false;
+  let lastRaw = seed; 
+  const options = { // see https://apexcharts.com/docs/chart-types/radialbar/
+    series: [toSeries(seed)],
+    chart: {
+      height: 220,
+      type: "radialBar",
+      toolbar: { show: false }
+    },
+    plotOptions: { 
+      radialBar: {
+        startAngle: -135,
+        endAngle: 135,
+        hollow: { size: "70%" },
+        track: { background: "#fff", strokeWidth: "95%" }, 
+        dataLabels: {
+          name: { show: false },
+          value: {
+            offsetY: 6,
+            fontSize: "32px",
+            formatter: () => hasValue ? unitFormatter(lastRaw) : "--" 
+          }
+        }
+      }
+    },
+    yaxis: { min, max }, 
+    fill: { type: "solid", colors: ["#bbb"] },
+    stroke: { lineCap: "round" }
+  };
+  // Clear any existing content before rendering
+  el.innerHTML = "";
+  const chart = new ApexCharts(el, options);
+  chart.render();
+
+  return {
+    // Update the gauge with a new raw value
+    setValue(rawValue) {
+      hasValue = true;
+      lastRaw = rawValue;
+
+      const seriesVal = toSeries(rawValue);
+      const clamped = Math.min(max, Math.max(min, seriesVal));
+
+      chart.updateSeries([clamped]);
+      chart.updateOptions({ fill: { colors: [colorFn(rawValue)] } }, false, false);
+    }
+  };
+}
+
 // Refresh charts based on selected range
 async function refreshChartRange() { 
     const range = document.getElementById("rangeSelect")?.value ?? "day";
