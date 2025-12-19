@@ -11,7 +11,7 @@
 // ---------------- Backend Configuration ----------------
 
 // Local / LAN testing
-#define SENSOR_POST_URL "http://192.168.40.144:5000/sensor"
+#define SENSOR_POST_URL "http://YOUR_SERVER_IP:5000/sensor"
 
 // ---------------- Timing Configuration ----------------
 
