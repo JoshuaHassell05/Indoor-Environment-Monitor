@@ -37,18 +37,17 @@ GET /api/readings and populates the fields below.
 
             <div class="card">
                 <div class="metric-title">Temperature</div>
-                <div class="metric-value">
-                    <span id="temp">--</span>
-                    <span class="unit">°F</span>
-                </div>
+                <div id="tempGauge"></div>
             </div>
 
             <div class="card">
                 <div class="metric-title">Humidity</div>
-                <div class="metric-value">
-                    <span id="hum">--</span>
-                    <span class="unit">%</span>
-                </div>
+                <div id="humGauge"></div>
+            </div>
+
+            <div class="card">
+                <div class="metric-title">Gas Resistance</div>
+                <div id="gasGauge"></div>
             </div>
 
             <div class="card">
@@ -58,15 +57,6 @@ GET /api/readings and populates the fields below.
                     <span class="unit">hPa</span>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="metric-title">Gas Resistance</div>
-                <div class="metric-value">
-                    <span id="gas">--</span>
-                    <span class="unit">Ω</span>
-                </div>
-            </div>
-        
 
             <div class="status-row" style="margin-top:14px;">
                 <div>
@@ -102,7 +92,8 @@ GET /api/readings and populates the fields below.
             (Higher resistance generally indicates better air quality)
         </p>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/static/main.js"></script>
 </body>
 </html>
