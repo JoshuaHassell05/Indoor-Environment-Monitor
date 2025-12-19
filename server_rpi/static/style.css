@@ -106,6 +106,12 @@ h1{
     width: 100% !important;
     height: 100% !important;
 }
+#tempGauge, #humGauge, #gasGauge { 
+    height: 220px; 
+    pointer-events: none; 
+    user-select: none; 
+} 
+
 /* Mobile: stack everything */
 @media (max-width: 900px){
     .grid{
