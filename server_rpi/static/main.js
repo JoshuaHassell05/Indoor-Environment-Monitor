@@ -25,22 +25,28 @@ function celsiusToFahrenheit(celsius) {
  }
 
  // Helper to set risk text and apply corresponding CSS class
- function setRisk(riskText){
-    const riskEL = document.getElementById("risk");
-    if (!riskEL) return;
-    // Reset to base class to avoid stale styling when risk changes
-    riskEL.className = "pill";
-    riskEL.textContent = riskText ?? "--";
-    if (riskText === "SAFE"){
-        riskEL.classList.add("safe");
-    }
-    else if (riskText === "ELEVATED"){
-        riskEL.classList.add("elevated");
-    }
-    else if (riskText === "WARNING"){
-        riskEL.classList.add("warning");
-    }
- }
+function setRisk(riskText, reasons = []) {
+  const riskEL = document.getElementById("risk");
+  if (!riskEL) return;
+
+  riskEL.className = "pill";
+  riskEL.textContent = riskText ?? "--";
+
+  if (riskText === "SAFE") {
+    riskEL.classList.add("safe");
+  } else if (riskText === "ELEVATED") {
+    riskEL.classList.add("elevated");
+  } else if (riskText === "WARNING") {
+    riskEL.classList.add("warning");
+  }
+
+  // Tooltip text
+  if (Array.isArray(reasons) && reasons.length > 0) {
+    riskEL.dataset.tooltip = reasons.join("\n");
+  } else {
+    riskEL.setAttribute("data-tooltip", "All sensor values within safe ranges");
+  }
+}
 
 // Helper to format ISO timestamp strings into a more readable format 
 function formatTimestamp(isoString) {
