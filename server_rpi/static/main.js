@@ -104,6 +104,23 @@ let tempGauge = null;
 let humGauge  = null;
 let gasGauge  = null;
 
+// Color functions for gauges based on value thresholds
+function tempColorForF(tempF){
+  if (tempF >= 86) return "#ff4d4d";      
+  if (tempF >= 78) return "#ffd166";      
+  if (tempF <= 60) return "#4dabf7";      
+  return "#2ecc71";                        
+}
+function humColor(h){
+  if (h >= 70 || h <= 25) return "#ff4d4d";   
+  if (h >= 60 || h <= 30) return "#ffd166";   
+  return "#2ecc71";                           
+}
+function gasColor(ohms){
+  if (ohms <= 20000) return "#ff4d4d"; 
+  if (ohms <= 30000) return "#ffd166"; 
+  return "#2ecc71";                   
+}
 
 // Create a gauge chart using ApexCharts
 function createGauge({
