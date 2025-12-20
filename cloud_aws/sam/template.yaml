@@ -53,3 +53,19 @@ Resources:
             RestApiId: !Ref Api
             Path: /sensor
             Method: post
+  
+  ApiLatestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../
+      Handler: lambdas.api_latest.app.lambda_handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IndoorEnvReadingsTable
+      Events:
+        LatestGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /api/latest
+            Method: get
