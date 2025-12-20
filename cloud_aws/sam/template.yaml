@@ -85,3 +85,8 @@ Resources:
             RestApiId: !Ref Api
             Path: /api/readings
             Method: get
+
+Outputs:
+  ApiBaseUrl:
+    Description: Base URL for API Gateway stage
+    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod"
