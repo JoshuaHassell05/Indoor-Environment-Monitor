@@ -44,3 +44,94 @@ def _floor_to_bucket(dt: datetime, bucket: timedelta) -> datetime:
     bucket_seconds = int(bucket.total_seconds())
     floored = (seconds // bucket_seconds) * bucket_seconds
     return epoch + timedelta(seconds=floored)
+
+# Main Lambda handler function
+def lambda_handler(event, context):
+    # Handle CORS preflight request
+    if event.get("httpMethod") == "OPTIONS":
+        return _resp(200, {"ok": True})
+    
+    params = event.get("queryStringParameters") or {}
+    range_str = (params.get("range") or "day").lower()
+    device_id = params.get("device_id") or "device-1"
+    window, bucket = _parse_range(range_str)
+    now = datetime.now(timezone.utc)
+    start = now - window
+
+    # Prepare DynamoDB keys
+    start_sk = start.isoformat()
+    end_sk = now.isoformat()
+
+    # Query DynamoDB for items in time range
+    resp = table.query(
+        KeyConditionExpression=Key("pk").eq(device_id) & Key("sk").between(start_sk, end_sk),
+        ScanIndexForward=True,  # ascending by time
+    )
+    items = resp.get("Items", [])
+
+    # Group into buckets and compute averages
+    buckets = {}  
+    for it in items:
+        ts = it.get("sk")
+        if not ts:
+            continue
+
+        try:
+            dt = datetime.fromisoformat(ts)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            else:
+                dt = dt.astimezone(timezone.utc)
+        except Exception:
+            continue
+
+        bdt = _floor_to_bucket(dt, bucket)
+        label = bdt.strftime("%Y-%m-%d %H:%M")
+        # Extract readings
+        temp = it.get("temperature")
+        hum = it.get("humidity")
+        gas = it.get("gas_resistance")
+
+        # Convert Decimal -> float when summing
+        def to_float(x):
+            if x is None:
+                return None
+            if isinstance(x, Decimal):
+                return float(x)
+            return float(x)
+
+        temp = to_float(temp)
+        hum = to_float(hum)
+        gas = to_float(gas)
+
+        if label not in buckets:
+            buckets[label] = {
+                "count": 0,
+                "temp_sum": 0.0,
+                "hum_sum": 0.0,
+                "gas_sum": 0.0,
+            }
+
+        # Skip if any reading is missing
+        if temp is None or hum is None or gas is None:
+            continue
+
+        buckets[label]["count"] += 1
+        buckets[label]["temp_sum"] += temp
+        buckets[label]["hum_sum"] += hum
+        buckets[label]["gas_sum"] += gas
+
+    # Prepare output list with averages
+    out = []
+    for label in sorted(buckets.keys()):
+        c = buckets[label]["count"]
+        if c == 0:
+            out.append({"t": label, "temp_avg": None, "hum_avg": None, "gas_avg": None})
+        else:
+            out.append({
+                "t": label,
+                "temp_avg": buckets[label]["temp_sum"] / c,
+                "hum_avg": buckets[label]["hum_sum"] / c,
+                "gas_avg": buckets[label]["gas_sum"] / c,
+            })
+    return _resp(200, out)
