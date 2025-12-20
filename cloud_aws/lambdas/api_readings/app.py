@@ -28,3 +28,11 @@ def _json_default(o):
     if isinstance(o, Decimal):
         return float(o)
     return str(o)
+
+# Parse the range string and return corresponding time delta and bucket size
+def _parse_range(range_str: str):
+    if range_str == "week":
+        return timedelta(days=7), timedelta(hours=6)
+    if range_str == "month":
+        return timedelta(days=30), timedelta(days=1)
+    return timedelta(days=1), timedelta(minutes=15)
