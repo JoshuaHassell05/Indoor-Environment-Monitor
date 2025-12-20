@@ -14,3 +14,16 @@ def _to_decimal(x):
     if isinstance(x, (int, float)):
         return Decimal(str(x))
     return x
+
+def _resp(status, body):
+    allowed = os.environ.get("ALLOWED_ORIGIN", "*")
+    return {
+        "statusCode": status,
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowed,
+            "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        },
+        "body": json.dumps(body),
+    }
