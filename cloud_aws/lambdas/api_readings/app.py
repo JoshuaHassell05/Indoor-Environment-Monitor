@@ -10,7 +10,7 @@ TABLE_NAME = os.environ.get("TABLE_NAME", "IndoorEnvReadings")
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(TABLE_NAME)
 
-# Function to handle Decimal serialization
+# Helper function to create HTTP response with CORS headers
 def _resp(status: int, body):
     return {
         "statusCode": status,
@@ -22,3 +22,9 @@ def _resp(status: int, body):
         },
         "body": json.dumps(body, default=_json_default),
     }
+
+# Helper for JSON serialization
+def _json_default(o): 
+    if isinstance(o, Decimal):
+        return float(o)
+    return str(o)
