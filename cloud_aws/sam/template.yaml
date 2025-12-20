@@ -37,3 +37,19 @@ Resources:
         AllowMethods: "'GET,POST,OPTIONS'"
         AllowHeaders: "'Content-Type'"
         AllowOrigin: "'*'"
+  
+  IngestSensorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../
+      Handler: lambdas.ingest_sensor.app.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref IndoorEnvReadingsTable
+      Events:
+        IngestPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /sensor
+            Method: post
