@@ -36,3 +36,11 @@ def _parse_range(range_str: str):
     if range_str == "month":
         return timedelta(days=30), timedelta(days=1)
     return timedelta(days=1), timedelta(minutes=15)
+
+# Floor a datetime to the nearest bucket
+def _floor_to_bucket(dt: datetime, bucket: timedelta) -> datetime:
+    epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
+    seconds = int((dt - epoch).total_seconds())
+    bucket_seconds = int(bucket.total_seconds())
+    floored = (seconds // bucket_seconds) * bucket_seconds
+    return epoch + timedelta(seconds=floored)
