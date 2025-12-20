@@ -5,6 +5,7 @@
         - Applies risk styling via CSS classes on the "pill" element
  */
 
+const API_BASE = "https://yc1b20bw9d.execute-api.us-east-1.amazonaws.com/Prod";
 // Helper to convert Celsius to Fahrenheit
 function celsiusToFahrenheit(celsius) {
   return (celsius * 9 / 5) + 32;
@@ -72,7 +73,7 @@ function formatBucketLabel(t) {
 
 // Helper to fetch time series data for charts
 async function fetchSeries(range) {
-  const res = await fetch(`/api/readings?range=${encodeURIComponent(range)}`);
+  const res = await fetch(`${API_BASE}/api/readings?range=${encodeURIComponent(range)}`);
   return await res.json();
 }
 
@@ -194,10 +195,12 @@ function createGauge({
 async function refreshChartRange() { 
     const range = document.getElementById("rangeSelect")?.value ?? "day";
     const series = await fetchSeries(range);
-    const labels = series.map(p => formatBucketLabel(p.t));
-    const tempsF = series.map(p => celsiusToFahrenheit(p.temp_avg));
-    const hums = series.map(p => p.hum_avg);
-    const gas = series.map(p => p.gas_avg);
+    const clean = series.filter(p => p.temp_avg != null || p.hum_avg != null || p.gas_avg != null);
+    const labels = clean.map(p => formatBucketLabel(p.t));
+    const tempsF = clean.map(p => (p.temp_avg == null ? null : celsiusToFahrenheit(p.temp_avg)));
+    const hums   = clean.map(p => p.hum_avg);
+    const gas    = clean.map(p => p.gas_avg);
+
     if (!tempChart) tempChart = createLineChart("tempChart", "Temperature (°F)", "rgb(255, 99, 132)");
     if (!humChart)  humChart  = createLineChart("humChart",  "Humidity (%)",     "rgb(54, 162, 235)");
     if (!gasChart)  gasChart  = createLineChart("gasChart",  "Gas Resistance (Ω)","rgb(75, 192, 192)");
@@ -221,7 +224,7 @@ async function refreshChartRange() {
  // Main function to refresh dashboard data
 async function refreshDashboard() {
   try {
-    const res = await fetch("/api/latest");
+    const res = await fetch(`${API_BASE}/api/latest`);
     const latest = await res.json();
     if (!latest?.timestamp) return;
 
@@ -248,38 +251,39 @@ document.getElementById("rangeSelect")?.addEventListener("change", () => {
 
 // Initialize gauges and start periodic refresh on DOM load
 document.addEventListener("DOMContentLoaded", () => {
-  tempGauge = createGauge({
-    elId: "tempGauge",
-    min: 40,
-    max: 100,
-    seed: 40,
-    unitFormatter: v => `${Math.round(v)}°F`,
-    colorFn: tempColorForF
-  });
+    tempGauge = createGauge({
+        elId: "tempGauge",
+        min: 40,
+        max: 100,
+        seed: 40,
+        unitFormatter: v => `${Math.round(v)}°F`,
+        colorFn: tempColorForF
+    });
 
-  humGauge = createGauge({
-    elId: "humGauge",
-    min: 0,
-    max: 100,
-    seed: 0,
-    unitFormatter: v => `${Math.round(v)}%`,
-    colorFn: humColor
-  });
+    humGauge = createGauge({
+        elId: "humGauge",
+        min: 0,
+        max: 100,
+        seed: 0,
+        unitFormatter: v => `${Math.round(v)}%`,
+        colorFn: humColor
+    });
 
-  const GAS_FULL_SCALE = 100000; 
+    const GAS_FULL_SCALE = 100000; 
 
-  gasGauge = createGauge({
-    elId: "gasGauge",
-    min: 0,
-    max: 100,                 
-    seed: 0,
-    unitFormatter: v => `${Math.round(v)}Ω`, 
-    colorFn: gasColor,                    
-    toSeries: (ohms) => (ohms / GAS_FULL_SCALE) * 100  
-  });
+    gasGauge = createGauge({
+        elId: "gasGauge",
+        min: 0,
+        max: 100,                 
+        seed: 0,
+        unitFormatter: v => `${Math.round(v)}Ω`, 
+        colorFn: gasColor,                    
+        toSeries: (ohms) => (ohms / GAS_FULL_SCALE) * 100  
+    });
 
-  refreshDashboard();
-  refreshChartRange();
-  setInterval(refreshDashboard, 3000);
-  setInterval(refreshChartRange, 9000);
+    refreshDashboard();
+    refreshChartRange();
+    setInterval(refreshDashboard, 15000);   
+    setInterval(refreshChartRange, 60000);  
+
 });
