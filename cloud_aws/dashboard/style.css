@@ -1,0 +1,153 @@
+body{
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 30px;
+}
+#time{
+    font-family: inherit;
+    font-weight: 400;  
+    font-size: 1rem;
+    line-height: 1.2;
+    color: #444;        
+}
+.container{
+    max-width: 1400px;
+    width: 95%;
+    margin: 0 auto;
+}
+h1{
+    margin: 0 0 6px 0;
+}
+.subtitle{
+    margin: 0 0 18px 0;
+    color: #555;
+}
+.status-row{
+    background: white;
+    padding: 14px 16px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 18px;
+}
+.label{
+    color: #444;
+    font-weight: 700;
+    margin-right: 6px;
+}
+.pill{
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #ddd;
+    font-weight: 700;
+}
+.pill.safe{
+    background: #d9f2de;
+    color: #1b5e20;
+}
+.pill.elevated{
+    background: #fff1cc;
+    color: #8a6d00;
+}
+.pill.warning{
+    background: #ffd6d6;
+    color: #8b0000;
+}
+.grid{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    align-items: stretch;
+}
+.card{
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.metric-title{
+    color: #555;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.metric-value{
+    font-size: 28px;
+    font-weight: 550;
+}
+.unit{
+    font-size: 16px;
+    font-weight: 700;
+    margin-left: 6px;
+    color: #444;
+}
+.footnote{
+    margin-top: 14px;
+    color: #666;
+    font-size: 12px;
+}
+.grid .status-row{
+    grid-column: 1 / -1;
+    margin-bottom: 0; 
+}
+.card.chart-card{
+    grid-column: 1 / -1;
+}
+.chart-wrap{
+    height: 220px;
+    width: 100%;
+    margin-top: 12px;
+}
+.chart-wrap canvas{
+    width: 100% !important;
+    height: 100% !important;
+}
+#tempGauge, #humGauge, #gasGauge { 
+    height: 220px; 
+    pointer-events: none; 
+    user-select: none; 
+} 
+@media (max-width: 900px){
+    .grid{
+        grid-template-columns: 1fr;
+    }
+    .chart-wrap{
+        height: 260px;
+    }
+}
+.pill[data-tooltip]{
+  position: relative;
+}
+.pill[data-tooltip]::after{
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);    
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: #222;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-line;    
+
+  min-width: 220px;         
+  max-width: 320px;
+
+  text-align: left;
+  z-index: 50;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.pill[data-tooltip]:hover::after{
+  opacity: 1;
+}
