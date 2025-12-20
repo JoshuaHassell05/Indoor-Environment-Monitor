@@ -1,17 +1,16 @@
 #include <Arduino.h>
-#include <Wifi.h>
+#include <WiFi.h>
 #include <HTTPClient.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME680.h>
+#include "config.h"
+#if USE_HTTPS
+    #include <WiFiClientSecure.h>
+#endif
 /*
     ESP32 Firmware to read BME680 sensor data and send it to a server via HTTP POST.
 */
-
-// Wi-Fi credentials: Place holder values here
-const char* WIFI_SSID = "your_ssid";
-const char* WIFI_PASSWORD = "your_password";
-const char* SENSOR_POST_URL = "http://YOUR_SERVER_IP:5000/sensor";
 
 Adafruit_BME680 bme; // I2C instance
 
@@ -79,23 +78,32 @@ void loop(){
     // Prepare JSON payload
     String json =
         "{"
+        "\"device_id\":\"" + String(DEVICE_ID) + "\","
         "\"temperature\":" + String(temperature, 2) + ","
         "\"humidity\":" + String(humidity, 2) + ","
         "\"pressure\":" + String(pressure, 2) + ","
-        "\"gas_resistance\":" + String(gasResistance, 2) +
+        "\"gas_resistance\":" + String(gasResistance, 0) +
         "}";
+
     // Send data via HTTP POST
     Serial.println("Sending data: ");
     Serial.println(json);
     HTTPClient http;
+    #if USE_HTTPS
+    // HTTPS POST (AWS API Gateway)
+    WiFiClientSecure client;
+    client.setInsecure(); 
+    http.begin(client, SENSOR_POST_URL);
+    #else
+    // HTTP POST (Local Flask)
     http.begin(SENSOR_POST_URL);
+    #endif
     http.addHeader("Content-Type", "application/json");
     int httpResponseCode = http.POST(json);
     Serial.print("HTTP Response code: ");
     Serial.println(httpResponseCode);
     Serial.println(http.getString());
     http.end();
-    // Transmission interval
-    delay(3000);
-}
-
+    // CHANGE: Use shared interval from config_common.h
+    delay(POST_INTERVAL_MS);
+    }
