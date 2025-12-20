@@ -1,0 +1,100 @@
+<!--
+Dashboard UI for Indoor Environment Monitor
+
+Served by Flask application at GET and updated by static/main.js which polls
+GET /api/readings and populates the fields below.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indoor Environment Monitor</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Indoor Environment Dashboard</h1>
+
+        <p class="subtitle">
+            Live reading from an ESP32 & BME680 sensor.
+        </p>
+
+        <!-- System status risk and last update time-->
+        <div class="status-row">
+            <div>
+                <span class="label">Risk:</span>
+                <span id="risk" class="pill">--</span>
+            </div>
+            <div>
+                <span class="label">Last Updated:</span>
+                <span id="time">--</span>
+            </div>
+        </div>
+
+        <!-- Latest sensor values-->
+        <div class="grid">
+
+            <div class="card">
+                <div class="metric-title">Temperature</div>
+                <div id="tempGauge"></div>
+            </div>
+
+            <div class="card">
+                <div class="metric-title">Humidity</div>
+                <div id="humGauge"></div>
+            </div>
+
+            <div class="card">
+                <div class="metric-title">Gas Resistance</div>
+                <div id="gasGauge"></div>
+            </div>
+
+            <div class="card">
+                <div class="metric-title">Pressure</div>
+                <div class="metric-value">
+                    <span id="press">--</span>
+                    <span class="unit">hPa</span>
+                </div>
+            </div>
+
+            <div class="status-row" style="margin-top:14px;">
+                <div>
+                    <span class="label">Chart Range:</span>
+                    <select id="rangeSelect">
+                        <option value="day">Day</option>
+                        <option value="week">Week</option>
+                        <option value="month">Month</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="metric-title">History</div>
+
+                <div class="chart-wrap">
+                    <canvas id="tempChart"></canvas>
+                </div>
+
+                <div class="chart-wrap">
+                    <canvas id="humChart"></canvas>
+                </div>
+
+                <div class="chart-wrap">
+                    <canvas id="gasChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <p class="footnote">
+            Note: BME680 gas resistance is commonly used as a proxy for air quality, but it is not a direct measurement of specific pollutants.
+            (Higher resistance generally indicates better air quality)
+        </p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/main.js"></script>
+</body>
+</html>
+ 
