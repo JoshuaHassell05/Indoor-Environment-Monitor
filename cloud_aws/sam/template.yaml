@@ -1,3 +1,14 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Indoor Environment Monitor - Serverless API (API Gateway + Lambda + DynamoDB)
+
+Globals:
+  Function:
+    Runtime: python3.11
+    Timeout: 10
+    MemorySize: 256
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref IndoorEnvReadingsTable
+        DEFAULT_DEVICE_ID: "device-1"
+        ALLOWED_ORIGIN: "*"
