@@ -8,8 +8,8 @@ This project is fully implemented and operational. The ESP32 collects sensor dat
 ---
 
 ## 🌐 Live Demo
-https://indoor-env-monitor-dashboard-265781770234.s3-website-us-east-1.amazonaws.com
-
+http://indoor-env-monitor-dashboard-265781770234.s3-website-us-east-1.amazonaws.com
+> Hosted using Amazon S3 static website hosting (HTTP).
 ---
 
 ## Goal of the Project
