@@ -62,12 +62,21 @@ def lambda_handler(event, context):
     start_sk = start.isoformat()
     end_sk = now.isoformat()
 
-    # Query DynamoDB for items in time range
-    resp = table.query(
-        KeyConditionExpression=Key("pk").eq(device_id) & Key("sk").between(start_sk, end_sk),
-        ScanIndexForward=True,  # ascending by time
-    )
-    items = resp.get("Items", [])
+     # Query DynamoDB for items in time range (paginated)
+    items = []
+    kwargs = {
+        "KeyConditionExpression": Key("pk").eq(device_id) & Key("sk").between(start_sk, end_sk),
+        "ScanIndexForward": True,  # ascending by time
+    }
+
+    while True:
+        resp = table.query(**kwargs)
+        items.extend(resp.get("Items", []))
+
+        last_key = resp.get("LastEvaluatedKey")
+        if not last_key:
+            break
+        kwargs["ExclusiveStartKey"] = last_key
 
     # Group into buckets and compute averages
     buckets = {}  
