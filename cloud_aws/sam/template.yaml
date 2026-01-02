@@ -73,6 +73,8 @@ Resources:
   ApiReadingsFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Timeout: 30
+      MemorySize: 512
       CodeUri: ../
       Handler: lambdas.api_readings.app.lambda_handler
       Policies:
