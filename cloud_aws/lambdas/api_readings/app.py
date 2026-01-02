@@ -62,7 +62,7 @@ def lambda_handler(event, context):
     start_sk = start.isoformat()
     end_sk = now.isoformat()
 
-     # Query DynamoDB for items in time range (paginated)
+    # Query DynamoDB for items in time range
     items = []
     kwargs = {
         "KeyConditionExpression": Key("pk").eq(device_id) & Key("sk").between(start_sk, end_sk),
