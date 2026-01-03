@@ -64,11 +64,31 @@ function formatTimestamp(isoString) {
 }
 
 // Helper to format bucket labels for time series charts
-function formatBucketLabel(t) {
+function formatBucketLabel(t, range) {
   if (!t) return "--";
-  // Convert "YYYY-MM-DD HH:MM" into an ISO UTC string "YYYY-MM-DDTHH:MMZ"
+
+  // Convert "YYYY-MM-DD HH:MM" → ISO UTC
   const isoUtc = t.replace(" ", "T") + "Z";
-  return new Date(isoUtc).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const d = new Date(isoUtc);
+
+  if (range === "month") {
+    return d.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric"
+    });
+  }
+
+  if (range === "week") {
+    return d.toLocaleString(undefined, {
+      weekday: "short",
+      hour: "numeric"
+    });
+  }
+
+  return d.toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit"
+  });
 }
 
 // Helper to fetch time series data for charts
@@ -196,7 +216,7 @@ async function refreshChartRange() {
     const range = document.getElementById("rangeSelect")?.value ?? "day";
     const series = await fetchSeries(range);
     const clean = series.filter(p => p.temp_avg != null || p.hum_avg != null || p.gas_avg != null);
-    const labels = clean.map(p => formatBucketLabel(p.t));
+    const labels = clean.map(p => formatBucketLabel(p.t, range));
     const tempsF = clean.map(p => (p.temp_avg == null ? null : celsiusToFahrenheit(p.temp_avg)));
     const hums   = clean.map(p => p.hum_avg);
     const gas    = clean.map(p => p.gas_avg);
