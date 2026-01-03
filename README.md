@@ -58,7 +58,6 @@ This project demonstrates:
 ## Hardware List
 - ESP32 Dev Board (ESP-WROOM-32)
 - BME680 Environmental Sensor
-- Raspberry Pi 
 - Breadboard + jumper wires
 - USB cables for power/programming
 
